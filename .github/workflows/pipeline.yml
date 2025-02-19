@@ -1,0 +1,19 @@
+name: Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  simple_deployment_job:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4 # GitHub reusable actions-checks source code
+      - uses: actions/setup-node@v4
+        with: 
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install
+      - name: Check style
+        run: npm run eslint
