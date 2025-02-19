@@ -9,11 +9,16 @@ jobs:
   simple_deployment_job:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v4 # GitHub reusable actions-checks source code
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4 # GitHub reusable actions
+      
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4 # GitHub reusable actions
         with: 
           node-version: '20'
+      
       - name: Install dependencies
         run: npm install
+      
       - name: Check style
         run: npm run eslint
