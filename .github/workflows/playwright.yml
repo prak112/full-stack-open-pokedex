@@ -7,11 +7,19 @@ on:
 jobs:
   e2e-test:
     timeout-minutes: 60
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Clone repository
       uses: actions/checkout@v4
     
+    - name: Cache Node.js dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     - name: Setup Node.js v20
       uses: actions/setup-node@v4
       with:
@@ -29,6 +37,6 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-test-report
-        path: playwright-test-report/
+        name: playwright-report
+        path: playwright-report/
         retention-days: 30
