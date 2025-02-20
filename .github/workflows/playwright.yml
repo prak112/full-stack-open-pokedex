@@ -36,8 +36,7 @@ jobs:
     - name: Wait for server to be ready
       run: |
         echo "Waiting for server to start..."
-        npx wait-on http://localhost:3000
-
+        npx wait-on http://localhost:8081
 
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
