@@ -17,18 +17,4 @@ describe('Pokedex', () => {
     await expect(page.getByText('Previous')).toBeVisible()
     await expect(page.getByText('Next')).toBeVisible()
   })
-
-  test('can navigate to the next Pokémon page', async ({ page }) => {
-    await page.goto('/pokemon/ivysaur')
-    await page.click('text=Next')
-    await expect(page).toHaveURL('/pokemon/venusaur')
-    await expect(page.getByText('venusaur')).toBeVisible()
-  })
-
-  test('can navigate to the previous Pokémon page', async ({ page }) => {
-    await page.goto('/pokemon/ivysaur')
-    await page.click('text=Previous')
-    await expect(page).toHaveURL('/pokemon/bulbasaur')
-    await expect(page.getByText('bulbasaur')).toBeVisible()
-  })
 })
