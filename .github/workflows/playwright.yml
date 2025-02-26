@@ -31,12 +31,15 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     
-    - name: Start server
-      run: npm run start & npx wait-on http://localhost:8081
-      timeout-minutes: 1
+    - name: Build
+      run: npm run build
 
+    - name: Start production server
+      run: npm run start-prod & npx wait-on http://localhost:5000
+      timeout-minutes: 1
+    
     - name: Run Playwright tests
-      run: npx playwright test
+      run: npm run test:e2e
       env:
         DEBUG: pw:webserver 
 
