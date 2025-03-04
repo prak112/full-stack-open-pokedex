@@ -7,7 +7,7 @@ on:
 
 jobs:
   simple_CI_job:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Clone repository
         uses: actions/checkout@v4 # GitHub reusable actions
