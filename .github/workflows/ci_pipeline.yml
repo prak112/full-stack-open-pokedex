@@ -1,4 +1,4 @@
-name: Deployment Pipeline
+name: CI Pipeline
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  simple_deployment_job:
+  simple_CI_job:
     runs-on: ubuntu-20.04
     steps:
       - name: Clone repository
