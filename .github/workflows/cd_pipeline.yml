@@ -10,7 +10,7 @@ on:
 
 jobs:
   simple_CD_job:
-    runs-on: ubuntu-20.04 
+    runs-on: ubuntu-24.04 
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Clone repository
