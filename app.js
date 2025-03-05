@@ -13,10 +13,6 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   }
   try {
-    // eslint-disable-next-line no-constant-condition
-    if (true) {
-      throw new Error(JSON.stringify('test error...'))
-    }
     res.json(healthCheck)
   } catch (error) {
     healthCheck.status = 'error'
