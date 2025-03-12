@@ -15,6 +15,61 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
+
+      - name: Create SemVer tag
+        run: |
+          # Configure action details
+          DEVELOPER_NAME="${GITHUB_ACTOR}"
+          DEVELOPER_EMAIL="${DEVELOPER_NAME}@users.noreply.github.com"
+
+          git config --local user.email "$DEVELOPER_EMAIL"
+          git config --local user.name "$DEVELOPER_NAME"
+
+          # Get latest tag, if none exists use package.json
+          PREV_TAG=$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
+          if [ -z "$PREV_TAG" ]; then
+            VERSION=$(node -p "require('./package.json').version")
+            NEW_TAG="v$VERSION"
+          else
+            # Extract version components
+            MAJOR=$(echo $PREV_TAG | sed 's/v\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/\1/')
+            MINOR=$(echo $PREV_TAG | sed 's/v\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/\2/')
+            PATCH=$(echo $PREV_TAG | sed 's/v\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/\3/')
+
+            # Increment version based on commit message and create new tag
+            if git log -1 --pretty=%B | grep -q "BREAKING CHANGE"; then
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+            elif git log -1 --pretty=%B | grep -q "feat"; then
+              MINOR=$((MINOR + 1))
+              PATCH=0
+            else
+              PATCH=$((PATCH + 1))
+            fi
+
+            NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          fi
+
+          # Generate information for annotation
+          TIMESTAMP=$(date -u)
+          COMMIT_HASH=$(git rev-parse HEAD)
+
+          TAG_MESSAGE="Release $NEW_TAG
+
+          Created: $TIMESTAMP
+          Commit: $COMMIT_HASH
+
+          This release was automatically created by CD pipeline.
+          "
+
+          echo "Creating new annotated tag: $NEW_TAG as $DEVELOPER_NAME"
+
+          # Create and push annotated tag
+          git tag -a "$NEW_TAG" -m "$TAG_MESSAGE"
+          git push origin "$NEW_TAG"
 
       - name: Deploy to production
-        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }} 
+        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
