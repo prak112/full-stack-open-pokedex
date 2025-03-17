@@ -12,13 +12,31 @@ jobs:
   simple_CD_job:
     runs-on: ubuntu-24.04 
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    outputs:
+      should_deploy: ${{ steps.check_skip.outputs.should_deploy }}
+      should_tag: ${{ steps.check_skip.outputs.should_tag }}
+
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
         with: 
           fetch-depth: 0
 
+      - name: Check for skip marker
+        id: check_skip
+        run: |
+          if git log -1 --pretty=%B | grep -q "#skip"; then
+            echo "Found #skip in commit message. Skipping Tag creation and deployment."
+            echo "should_deploy=false" >> $GITHUB_OUTPUT
+            echo "should_tag=false" >> $GITHUB_OUTPUT
+          else
+            echo "No skip marker found. Proceeding to Tag creation and deployment"
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+            echo "should_tag=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create SemVer tag
+        if: ${{ steps.check_skip.outputs.should_tag == 'true' }}
         run: |
           # Configure action details
           DEVELOPER_NAME="${GITHUB_ACTOR}"
@@ -54,10 +72,10 @@ jobs:
           fi
 
           # Generate information for annotation
-          TIMESTAMP=$(date -u)
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           COMMIT_HASH=$(git rev-parse HEAD)
 
-          TAG_MESSAGE="Release $NEW_TAG
+          TAG_MESSAGE="Release $NEW_TAG as $DEVELOPER_NAME
 
           Created: $TIMESTAMP
           Commit: $COMMIT_HASH
@@ -72,4 +90,5 @@ jobs:
           git push origin "$NEW_TAG"
 
       - name: Deploy to production
+        if: ${{ steps.check_skip.outputs.should_deploy == 'true' }}
         run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
