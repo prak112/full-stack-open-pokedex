@@ -23,8 +23,8 @@ jobs:
           description: |
             **Repository:** [${{ github.repository }}](${{ github.event.repository.html_url }})
             **Branch:** [${{ github.event.workflow_run.head_branch }}](${{ github.event.workflow_run.head_repository.html_url }}/tree/${{github.event.workflow_run.head_branch }})
-            **Commit:** [${{ github.event.workflow_run.head_commit.message }}](${{ github.event.workflow_run.head_repository.html_url }}/commit/${{ github.event.workflow_run.head_sha }})
-            **Deployment:** ${{ github.event.workflow_run.name == 'CD Pipeline' && github.event.workflow_run.conclusion == 'success' && 'Deployed successfully 🎉 to https://full-stack-open-pokedex-m6v6.onrender.com' || github.event.workflow_run.conclusion == 'failure' && 'Failed ❌ Please check logs at https://github.com/prak112/full-stack-open-pokedex/actions/' || 'Awaiting CD workflow status...' }}
+            **Commit:** [${{ github.event.workflow_run.head_commit.message }}](${{ github.event.workflow_run.head_repository.html_url }}/commit/${{ github.event.workflow_run.head_sha }}) by ${{ github.event.workflow_run.triggering_actor }}
+            **Deployment:** ${{ github.event.workflow_run.name == 'CD Pipeline' && github.event.workflow_run.conclusion == 'success' && 'Deployed successfully 🎉 to https://full-stack-open-pokedex-m6v6.onrender.com' || github.event.workflow_run.conclusion == 'failure' && 'Failed ❌ Please check logs at https://github.com/prak112/full-stack-open-pokedex/actions/' || github.event.workflow_run.name == 'CD Pipeline' && github.event.workflow_run.conclusion == 'skipped' && 'Cancelled due to CI failure' || 'Awaiting CD workflow status...' }}
     
           color: ${{ github.event.workflow_run.conclusion == 'success' && '0x3CF013' || github.event.workflow_run.conclusion == 'failure' && '0xBF0A13' || '0x3498DB' }}
           username: "GitHub Actions"
