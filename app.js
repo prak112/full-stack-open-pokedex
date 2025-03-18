@@ -21,7 +21,7 @@ app.get('/health', (req, res) => {
   }
 })
 
-app.use(express.static('dist'));
+app.use(express.static('dist'))
 
 app.listen(PORT, () => {
   console.log(`server started on port ${PORT}`)
