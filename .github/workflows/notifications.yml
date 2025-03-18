@@ -18,13 +18,15 @@ jobs:
         if: always()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          title: "Workflow: ${{ github.event.workflow_run.name }} (${{ github.event.workflow_run.conclusion || 'in progress' }})"
+          nodetail: true
+          title: "${{ github.event.workflow_run.name }}"
           description: |
-            Repository: ${{ github.repository }}
-            Branch: ${{ github.event.workflow_run.head_branch }}
+            Repository: [${{ github.repository }}](${{ github.repositoryUrl }})
+            Branch: [${{ github.event.workflow_run.head_branch }}](${{ github.event.workflow_run.head_repository.html_url }}/tree/${{github.event.workflow_run.head_branch }})
             Commit: [${{ github.event.workflow_run.head_commit.message }}](${{ github.event.workflow_run.head_repository.html_url }}/commit/${{ github.event.workflow_run.head_sha }})
             Time: ${{ github.event.workflow_run.updated_at }}
-            ${{ github.event.workflow_run.conclusion == 'failure' && 'Check Workflow logs for details' || '' }}
-          url: ${{ github.event.workflow_run.html_url }}
+            ${{ github.event.workflow_run.conclusion == 'failure' && 'Check Workflow logs for details: ' || '' }}
+            [${{ github.event.workflow_run.run_number }}](${{ github.event.workflow_run.logs_url }})
+    
           color: ${{ github.event.workflow_run.conclusion == 'success' && '0x28A745' || github.event.workflow_run.conclusion == 'failure' && '0xDC3545' || '0x3498DB' }}
           username: "GitHub Actions"
