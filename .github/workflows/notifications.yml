@@ -19,12 +19,14 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
           nodetail: true
-          title: "${{ github.event.workflow_run.name }} - ${{ github.event.workflow_run.status }} "
+          title: "${{ github.event.workflow_run.name }} - ${{ github.event.workflow_run.conclusion }}"
           description: |
             **Repository:** [${{ github.repository }}](${{ github.event.repository.html_url }})
             **Branch:** [${{ github.event.workflow_run.head_branch }}](${{ github.event.workflow_run.head_repository.html_url }}/tree/${{github.event.workflow_run.head_branch }})
             **Commit:** [${{ github.event.workflow_run.head_commit.message }}](${{ github.event.workflow_run.head_repository.html_url }}/commit/${{ github.event.workflow_run.head_sha }})
-            Workflow Logs: [#${{ github.event.workflow_run.run_number }}](${{ github.event.workflow_run.workflow_url }})
+            **Deployment:** ${{ github.event.workflow_run.conclusion == 'success' && 'Deployed successfully 🎉 to https://full-stack-open-pokedex-m6v6.onrender.com' || github.event.workflow_run.conclusion == 'failure' && 'Failed ❌ Please check logs at https://github.com/prak112/full-stack-open-pokedex/actions/' || 'Unknown.' }}
     
-          color: ${{ github.event.workflow_run.conclusion == 'success' && '0x28A745' || github.event.workflow_run.conclusion == 'failure' && '0xDC3545' || '0x3498DB' }}
+          color: ${{ github.event.workflow_run.conclusion == 'success' && '0x3CF013' || github.event.workflow_run.conclusion == 'failure' && '0xBF0A13' || '0x3498DB' }}
           username: "GitHub Actions"
+
+          
