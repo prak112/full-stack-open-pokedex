@@ -1,0 +1,30 @@
+name: Discord Notifications
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline", "Playwright Tests", "CD Pipeline"]
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  discord_notification:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Workflow Status
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          title: "Workflow: ${{ github.event.workflow_run.name }} (${{ github.event.workflow_run.conclusion || 'in progress' }})"
+          description: |
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.event.workflow_run.head_branch }}
+            Commit: [${{ github.event.workflow_run.head_commit.message }}](${{ github.event.workflow_run.head_repository.html_url }}/commit/${{ github.event.workflow_run.head_sha }})
+            Time: ${{ github.event.workflow_run.updated_at }}
+            ${{ github.event.workflow_run.conclusion == 'failure' && 'Check Workflow logs for details' || '' }}
+          url: ${{ github.event.workflow_run.html_url }}
+          color: ${{ github.event.workflow_run.conclusion == 'success' && '0x28A745' || github.event.workflow_run.conclusion == 'failure' && '0xDC3545' || '0x3498DB' }}
+          username: "GitHub Actions"
